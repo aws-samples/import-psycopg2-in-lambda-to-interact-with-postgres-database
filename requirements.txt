@@ -1,0 +1,2 @@
+aws-cdk-lib==2.37.1
+black

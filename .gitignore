@@ -1,0 +1,6 @@
+commands.txt
+*.log
+.idea
+cdk.out
+venv
+Constructs/__pycache__/*
