@@ -1,5 +1,8 @@
+# Default architecture value
+ARG ARCHITECTURE="arm64"
+
 # Start from lambda Python3.8 image
-FROM public.ecr.aws/lambda/python:3.8
+FROM public.ecr.aws/lambda/python:3.8-${ARCHITECTURE}
 
 # Copy the lambda code, together with its requirements
 COPY lambda/requirements.txt ${LAMBDA_TASK_ROOT}

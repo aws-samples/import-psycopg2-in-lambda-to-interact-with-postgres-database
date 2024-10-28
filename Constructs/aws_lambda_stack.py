@@ -3,7 +3,9 @@ from aws_cdk import aws_iam as iam, aws_lambda as aws_lambda, Duration
 
 
 class LambdaStack(cdk.Stack):
-    def __init__(self, scope: cdk.App, construct_id: str, **kwargs) -> None:
+    def __init__(
+        self, scope: cdk.App, construct_id: str, architecture="ARM", **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Lambda function role
@@ -30,7 +32,7 @@ class LambdaStack(cdk.Stack):
             code=aws_lambda.Code.from_asset("Constructs/lambda/lambda_deploy.zip"),
             handler="lambda_code.handler",
             role=lambda_role,
-            timeout=Duration.seconds(10),
+            timeout=Duration.seconds(20),
         )
 
         # Deploy Lambda function from a Docker file
@@ -39,10 +41,19 @@ class LambdaStack(cdk.Stack):
             "LambdaPsycopg2Docker",
             function_name="lambda-from-docker",
             code=aws_lambda.DockerImageCode.from_image_asset(
-                directory="Constructs", cmd=["lambda_code.handler"]
+                directory="Constructs",
+                cmd=["lambda_code.handler"],
+                build_args={
+                    "ARCHITECTURE": "arm64" if architecture == "ARM" else "x86_64"
+                },
             ),
             role=lambda_role,
-            timeout=Duration.seconds(10),
+            architecture=(
+                aws_lambda.Architecture.ARM_64
+                if architecture == "ARM"
+                else aws_lambda.Architecture.X86_64
+            ),
+            timeout=Duration.seconds(20),
         )
 
         # Checkov excepetions
